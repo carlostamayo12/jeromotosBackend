@@ -95,9 +95,6 @@ app.use(cors());
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-//console.log("dirName: "+ __dirname);
-
-
 fs.readdirSync(path.join(__dirname, 'rutas')).forEach((file) => {
   var name = file.substr(0, file.indexOf('.'))
   if (name == "index") {
