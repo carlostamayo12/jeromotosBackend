@@ -19,6 +19,39 @@ router.post('/create', async (req, res) => {
 				adminId: req.body.adminId
 			}, { transaction: t });
 
+			/*if (result.dataValues.rol > 1) {
+				console.log(result.dataValues.id)
+				const admin = await User.create({ id: 0, user: result.dataValues.identificacion, userId: result.dataValues.id }, { transaction: t })
+				await Transacciones.create({ id: 0, tabla: 'user', evento: 'Create', registro: admin.dataValues, adminId: req.body.adminId }, { transaction: t })
+			}*/
+
+			res.json({
+				error: false,
+				datos: result
+			})
+			return t.commit();
+		}
+		catch (err) {
+			res.json(error(err))
+			return t.rollback();
+		}
+	});
+})
+
+
+// Persona Create con User
+router.post('/creat', async (req, res) => {
+	return sequelize.transaction().then(async t => {
+		try {
+			const result = await Persona.create(req.body, { transaction: t });
+			await Transacciones.create({
+				id: 0,
+				tabla: 'persona',
+				evento: 'Create',
+				registro: result.dataValues,
+				adminId: req.body.adminId
+			}, { transaction: t });
+
 			if(result.dataValues.rol > 1){
 				console.log(result.dataValues.id)
 				const admin = await User.create({id:0, user:result.dataValues.identificacion, userId:result.dataValues.id},{transaction: t})
@@ -77,4 +110,28 @@ router.post('/findAll', async (req, res) => {
 		res.json(error(e))
 	})
 })
+
+//Listar Tecnicos Map
+router.post('/tecnicoMap', async (req, res) => {
+	return sequelize.transaction(t => {
+		return Persona.findAll({
+			where: {
+				[Op.or]: [{ rol: 1 }, { rol: 3 }]
+			},
+			attributes: [['id', 'value'], ['nombre', 'label']],
+			order: [
+				['nombre', 'asc']
+			],
+		}, { transaction: t })
+	}).then(result => {
+		res.json({
+			error: false,
+			datos: result
+		})
+	}).catch(e => {
+		res.json(error(e))
+	})
+})
+
+
 export default router

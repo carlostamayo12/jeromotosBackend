@@ -1,5 +1,5 @@
 import express from 'express'
-import { sequelize, TablaMantenimiento, TipoMoto, ServicioTaller } from '../database'
+import { sequelize, Marca, TablaMantenimiento,Transacciones, TipoMoto, ServicioTaller } from '../database'
 import Sequelize from 'sequelize'
 import error from '../functions/error'
 
@@ -32,6 +32,37 @@ router.post('/create', async (req, res) => {
     });
 })
 
+//Update Tabla Mantenimiento
+router.post('/update', async (req, res) => {
+    return sequelize.transaction().then(async t => {
+        try {
+            const result = await TablaMantenimiento.update(req.body, { where: { id: req.body.id }, transaction: t });
+            if (result[0]) {
+							await Transacciones.create({
+                    id: 0,
+                    tabla: 'Tabla Mantenimiento',
+                    evento: 'Update',
+                    //registro: { id: req.body.id, nombre: req.body.nombre },
+										registro: req.body,
+										adminId: req.body.adminId
+                }, { transaction: t });
+            }
+
+            res.json({
+                error: false,
+                datos: result
+            })
+            return t.commit();
+        }
+        catch (err) {
+            res.json(error(err))
+            return t.rollback();
+        }
+    });
+})
+
+
+//Listar por tipo de moto
 router.post('/FindByTipoAll', async (req, res) => {
     return sequelize.transaction(t => {
         return TablaMantenimiento.findAll({
