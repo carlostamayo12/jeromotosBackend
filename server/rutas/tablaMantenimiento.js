@@ -6,7 +6,7 @@ import error from '../functions/error'
 var router = express.Router()
 const Op = Sequelize.Op
 
-//Create Marca
+//Create Bulk Tabla Mantenimineto 
 router.post('/create', async (req, res) => {
     return sequelize.transaction().then(async t => {
         console.log(req.body)

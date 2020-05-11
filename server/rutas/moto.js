@@ -1,5 +1,17 @@
 import express from 'express'
-import { sequelize, Marca, Moto, TipoMoto, Persona, Transacciones } from '../database'
+import {
+	sequelize,
+	Contador,
+	Marca,
+	Moto,
+	OrdenEntrada,
+	Persona,
+	ServicioTaller,
+	TablaMantenimiento,
+	TipoMoto,
+	Transacciones
+} from '../database'
+
 import Sequelize from 'sequelize'
 import error from '../functions/error'
 
@@ -17,7 +29,7 @@ router.post('/create', async (req, res) => {
 				tabla: 'moto',
 				evento: 'Create',
 				//registro: { id: result.id, nombre: req.body.nombre },
-				registro:result.dataValues,
+				registro: result.dataValues,
 				adminId: req.body.adminId
 			}, { transaction: t });
 			res.json({
@@ -46,6 +58,58 @@ router.post('/findAll', async (req, res) => {
 				['placa', 'asc']
 			],
 			transaction: t
+		})
+	}).then(result => {
+		res.json({
+			error: false,
+			datos: result
+		})
+	}).catch(e => {
+		res.json(error(e))
+	})
+})
+
+router.post('/findByPlaca', async (req, res) => {
+	return sequelize.transaction(t => {
+		return Moto.findAll({
+			where: {
+				placa: req.body.placa
+			},
+			include: [{ model: TipoMoto, attributes: ['referencia'], include: [{ model: Marca, attributes: ['nombre'] }] },
+				{ model: Persona ,attributes: ['nombre', 'telefono', 'direccion']}]
+		})
+	}).then(result => {
+		res.json({
+			error: false,
+			datos: result
+		})
+	}).catch(e => {
+		res.json(error(e))
+	})
+})
+
+router.post('/findOneByPlacaNew', async (req, res) => {
+	return sequelize.transaction(t => {
+		return Moto.findOne({
+			where: {
+				placa: req.body.placa
+			},
+			include: [
+				{
+					model: TipoMoto, attributes: ['referencia'],
+					include: [
+						{ model: Marca, attributes: ['nombre'] },
+						{
+							model: TablaMantenimiento, where: { estado: 1 },
+							include: [{ model: ServicioTaller }]
+						}
+					]
+				},
+				{ model: Persona, attributes: ['nombre', 'telefono', 'direccion'] },
+				{ model: OrdenEntrada, where: { estado: 'Iniciado' }, attributes: ['id'], required: false },
+			],
+			transaction: t
+
 		})
 	}).then(result => {
 		res.json({
