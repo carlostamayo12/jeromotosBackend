@@ -3,11 +3,52 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import fs from 'fs'
 import error from './functions/error'
-//import admin from 'firebase-admin'
-//import adminSDK from './adminsdk2.json'
+import admin from 'firebase-admin'
+import adminSDK from './adminSdk.json'
 import cors from 'cors'
 //import VueAudio from 'vue-audio';
    
+admin.initializeApp({
+  credential: admin.credential.cert(adminSDK),
+  apiKey: "AIzaSyDPcfjncHo8kpRzk4FKjoBt47BtVAP0SE0",
+  authDomain: "fir-prueba-5bf3d.firebaseapp.com",
+  databaseURL: "https://fir-prueba-5bf3d.firebaseio.com",
+  projectId: "fir-prueba-5bf3d",
+  storageBucket: "fir-prueba-5bf3d.appspot.com",
+  messagingSenderId: "857907773088",
+  appId: "1:857907773088:web:a7a1ece2cdaec2de44d3c5",
+  measurementId: "G-YEWRQND448"
+});
+
+var topic = 'QmxIp8cRtWZEoV0mk4CS2Xw1CBL2'
+
+var message = {
+  notification: {
+    title: "Notification 1",
+    body: "Notification 2",
+  },
+  data: {
+    "param1": "value1",
+    "param2": "value2"
+  },
+  topic: topic
+};
+
+admin.messaging().send(message)
+  .then((response) => {
+    // Response is a message ID string.
+    console.log('Successfully sent message:', response);
+  })
+  .catch((error) => {
+    console.log('Error sending message:', error);
+  });
+
+
+
+
+
+
+
 
 /*admin.initializeApp({
   credential: admin.credential.cert(adminSDK),

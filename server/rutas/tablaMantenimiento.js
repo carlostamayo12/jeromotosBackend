@@ -14,7 +14,7 @@ router.post('/create', async (req, res) => {
             const result = await TablaMantenimiento.bulkCreate(req.body.lista, { transaction: t });
             /*await Transacciones.create({
                 id: 0,
-                tabla: 'marca',
+                tabla: 'marca',  
                 evento: 'Create',
                 registro: { id: result.id, nombre: req.body.nombre },
                 adminId: req.body.adminId

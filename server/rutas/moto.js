@@ -21,17 +21,20 @@ const Op = Sequelize.Op
 //Create Moto
 router.post('/create', async (req, res) => {
 	return sequelize.transaction().then(async t => {
-		console.log(req.body)
+		//console.log(req.body)
 		try {
-			const result = await Moto.create(req.body, { transaction: t });
+			const result = await Moto.create(req.body.moto, { transaction: t });
 			await Transacciones.create({
 				id: 0,
 				tabla: 'moto',
 				evento: 'Create',
 				//registro: { id: result.id, nombre: req.body.nombre },
 				registro: result.dataValues,
-				adminId: req.body.adminId
+				adminId: req.body.moto.adminId
 			}, { transaction: t });
+
+			await Contador.bulkCreate(req.body.lista, { transaction: t })
+
 			res.json({
 				error: false,
 				datos: result
@@ -120,5 +123,22 @@ router.post('/findOneByPlacaNew', async (req, res) => {
 		res.json(error(e))
 	})
 })
+
+//Ultimo id
+router.post('/lastId', async (req, res) =>{
+	return sequelize.transaction(t =>{
+		return Moto.findAll({
+			order: [['id', 'DESC']], transaction:t
+		})
+	}).then(result =>{
+		res.json({
+			error: false,
+			datos: result
+		})
+	}).catch(e =>{
+		res.json(error(e))
+	})
+})
+
 
 export default router
