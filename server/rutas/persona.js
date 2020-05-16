@@ -38,8 +38,7 @@ router.post('/create', async (req, res) => {
 	});
 })
 
-
-// Persona Create con User
+// Persona Create con User revisar
 router.post('/creat', async (req, res) => {
 	return sequelize.transaction().then(async t => {
 		try {
@@ -71,12 +70,45 @@ router.post('/creat', async (req, res) => {
 	});
 })
 
+//Persona Update
+router.post('/update', async (req, res) => {
+	console.log(req.body)
+	return sequelize.transaction().then(async t => {
+		try {
+			const result = await Persona.update(req.body, { where: { id: req.body.id }, transaction: t });
+			
+			if (result[0]) {
+
+				await Transacciones.create({
+					id: 0,
+					tabla: 'persona',
+					evento: 'Update',
+					registro: req.body,
+					adminId: req.body.adminId
+				}, { transaction: t });
+			}
+
+			res.json({
+				error: false,
+				datos: result
+			})
+			return t.commit();
+		}
+		catch (err) {
+			res.json(error(err))
+			return t.rollback();
+		}
+	});
+})
+
+
+
 //FindOne By id
 router.post('/findOne', async (req, res) => {
   return sequelize.transaction(t => {
     return Persona.findOne({
       where:{
-        id: 1
+        id: req.body.id
       },
       order: [
         ['nombre', 'asc']
@@ -90,6 +122,18 @@ router.post('/findOne', async (req, res) => {
   }).catch(e => {
     res.json(error(e))
   })
+})
+
+//Login
+router.post('/login', async (req, res) =>{
+	return sequelize.transaction(t =>{
+		return Persona.findAll({
+			where:{
+				correo: req.body.user,
+				pwd: req.body.pwd
+			}
+		})
+	})
 })
 
 //Find All nombre asc

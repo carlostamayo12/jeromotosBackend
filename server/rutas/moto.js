@@ -48,6 +48,37 @@ router.post('/create', async (req, res) => {
 	});
 })
 
+//Update Moto
+router.post('/update', async (req, res) => {
+	return sequelize.transaction().then(async t => {
+		try {
+			const result = await Moto.update(req.body, { where: { id: req.body.id }, transaction: t });
+			console.log(result)
+			if (result[0]) {
+
+				await Transacciones.create({
+					id: 0,
+					tabla: 'Moto',
+					evento: 'Update',
+					registro: req.body,
+					adminId: req.body.adminId
+				}, { transaction: t });
+			}
+
+			res.json({
+				error: false,
+				datos: result
+			})
+			return t.commit();
+		}
+		catch (err) {
+			res.json(error(err))
+			return t.rollback();
+		}
+	});
+})
+
+
 
 
 
