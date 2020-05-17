@@ -96,7 +96,6 @@ router.post('/finalizar', async (req, res) => {
     });
 })
 
-
 //Busca todas las ordenes iniciadas
 router.post('/findAllIniciadas', async (req, res) => {
     return sequelize.transaction(t => {
@@ -127,7 +126,6 @@ router.post('/findAllIniciadas', async (req, res) => {
     })
 })
 
-
 //Saber si la moto se encuentra en el taller
 router.post('/Exist', async (req, res) => {
     return sequelize.transaction(t => {
@@ -146,6 +144,27 @@ router.post('/Exist', async (req, res) => {
         res.json(error(e))
     })
 })
+
+//Busca todas las ordenes por moto
+router.post('/findAllByMoto', async (req, res) =>{
+    return sequelize.transaction(t =>{
+        return OrdenEntrada.findAll({
+            where:{
+                motoId: req.body.motoId
+            },
+            order: [['id', 'DESC']],
+            transaction: t
+        })
+    }).then(result => {
+        res.json({
+            error: false,
+            datos: result
+        })
+    }).catch(e => {
+        res.json(error(e))
+    })
+})
+
 
 //ultima orden saber id
 router.post('/ultimaOrden', async (req, res)=>{

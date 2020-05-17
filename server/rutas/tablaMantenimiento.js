@@ -61,7 +61,6 @@ router.post('/update', async (req, res) => {
     });
 })
 
-
 //Listar por tipo de moto
 router.post('/FindByTipoAll', async (req, res) => {
     return sequelize.transaction(t => {
@@ -80,8 +79,6 @@ router.post('/FindByTipoAll', async (req, res) => {
         res.json(error(e))
     })
 })
-
-
 
 //Listar Tabla Mantenimiento de un Tipo de Moto
 router.post('/FindByTipoMoto', async (req, res) => {
@@ -106,5 +103,18 @@ router.post('/FindByTipoMoto', async (req, res) => {
     })
 })
 
+router.post('/joinContador', async (req, res) => {
+    return sequelize.query("SELECT * FROM tabla_mantenimiento as t INNER JOIN contador as c ON t.servicioId = c.servicioId AND c.motoId = " + req.body.motoId + " AND t.estado =1", {
+        type: sequelize.QueryTypes.SELECT
+    }).then(result => {  
+        console.log(result)
+        res.json({
+            error: false,
+            datos: result
+        })
+    }).catch(e => {
+        res.json(error(e))
+    })
+})
 
 export default router
