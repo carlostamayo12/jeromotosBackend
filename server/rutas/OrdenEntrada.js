@@ -152,8 +152,30 @@ router.post('/findAllByMoto', async (req, res) =>{
             where:{
                 motoId: req.body.motoId
             },
-            order: [['id', 'DESC']],
+            order: [['fechaSalida', 'DESC']],
+            include:[{model:Servicios}],
             transaction: t
+        })
+    }).then(result => {
+        res.json({
+            error: false,
+            datos: result
+        })
+    }).catch(e => {
+        res.json(error(e))
+    })
+})
+
+
+router.post('/ultimoKm', async (req, res) => {
+    return sequelize.transaction(t =>{
+        return OrdenEntrada.findOne({
+            where:{
+                motoId: req.body.motoId,
+                estado: 'Finalizado'
+            },
+            order: [['fechaSalida', 'DESC']],
+            transaction:t
         })
     }).then(result => {
         res.json({
