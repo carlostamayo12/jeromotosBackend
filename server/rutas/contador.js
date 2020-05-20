@@ -1,5 +1,5 @@
 import express from 'express'
-import { sequelize, Contador } from '../database'
+import { sequelize, Contador, Moto, Persona, ServicioTaller, TablaMantenimiento } from '../database'
 import Sequelize from 'sequelize'
 import error from '../functions/error'
 
@@ -32,5 +32,29 @@ router.post('/create', async (req, res) => {
         }
     });
 })
+
+router.post('/Notificacion', async (req, res) =>{
+    return sequelize.transaction(t =>{
+        return Contador.findAll({
+            where:{
+                id: 18
+            },
+            include:[
+                { model: Moto, include:[{ model: Persona }] }, 
+                { model: ServicioTaller, include:[{ model: TablaMantenimiento}] }
+            ],
+            transaction: t
+        })
+    }).then(result =>{
+        res.json({
+            error: false,
+            datos: result
+        })
+    }).catch(e =>{
+        res.json(error(e))
+    })
+})
+
+
 
 export default router

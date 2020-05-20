@@ -37,6 +37,7 @@ var message = {
 admin.messaging().send(message)
   .then((response) => {
     // Response is a message ID string.
+    console.log('topic : ' + topic )
     console.log('Successfully sent message:', response);
   })
   .catch((error) => {
