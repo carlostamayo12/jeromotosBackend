@@ -41,7 +41,7 @@
     "jsonschema": "^1.2.4",
     "jsonwebtoken": "^8.3.0",
     "mariadb-transact": "^0.7.4",
-    "moment": "^2.22.2",
+    "moment": "^2.29.4",
     "mqtt": "^2.18.2",
     "mysql2": "^1.5.3",
     "path": "^0.12.7",
