@@ -39,7 +39,7 @@
     "firebase-admin": "^5.13.1",
     "fs": "0.0.1-security",
     "jsonschema": "^1.2.4",
-    "jsonwebtoken": "^8.3.0",
+    "jsonwebtoken": "^9.0.0",
     "mariadb-transact": "^0.7.4",
     "moment": "^2.22.2",
     "mqtt": "^2.18.2",
